@@ -1,0 +1,122 @@
+#! /bin/bash
+
+
+#local n=-1
+#declare -a subgroups
+
+
+n=0
+function azure(){
+#local n=0
+echo "\n\n\n"
+local sub=""
+sub+=$@
+echo "Take is the start of the function======================================================== ===================== $sub"
+/root/bin/az $@ -h>./azhelp
+local subgroups=()
+#cat ./azhelp
+#declare -a local help
+local help=()
+readarray help < ./azhelp
+
+#help=(value1 value2)
+#echo "Hello"
+#echo ${help[1]}
+lines=`wc -l</home/ubuntu/azhelp`
+echo "After az $sub is run, Lines of the help file =========== $lines"
+echo "This is the array"
+echo "---------------------------------------------------------------"
+for i in "${help[@]}"
+do
+echo $i
+done
+
+echo "---------------------------------------------------------------"
+echo ""
+echo ""
+echo ""
+
+
+#echo "\n File:"
+#cat ./azhelp
+local c=0
+for (( c=0; c<=$lines; c++ ))
+do
+#   echo "Welcome $c times"
+   string=${help[$c]}
+   if [[ $string == *"Subgroups"* ]]; then
+   echo "Found Subgroups at line $c"
+   local n=$(($n+1))
+
+   re='[a-zA-Z]'
+
+   c=$(($c+1))
+
+   #while [[  "${help[$c]}" =~ $re ]]
+   #do
+   #echo ${help[$c]}
+   #c=$c+1
+   #done
+
+   while [[  "${help[$c]}" =~ $re ]]
+   do
+    echo "While loop to iterate starting from C=========$c"
+    echo "Line at C ======${help[$c]}"
+
+    arg=`echo ${help[$c]} | cut -d \: -f 1`
+    echo "Already in the help command . This is sub============================== $sub"
+    echo "ARGUMENT which has to be added to the help command arg . This is arg == $arg"
+    echo "The above argument will be added at $n in the array"
+
+
+
+
+    sub+=" $arg"
+
+
+
+
+    #subgroups[$n]=$arg
+    #local sub=""
+    #len=${#subgroups[@]}
+
+    #echo "Length of array = $len"
+    #for((i=0; i<=$len; i++))
+    #do
+    #  echo "ARGUMENT whic is already in the help command== ${subgroups[$i]}"
+    #done
+
+
+
+
+    #for((i=0; i<=$len; i++))
+    #do
+    #  sub+=" ${subgroups[$i]}"
+      #echo "az $sub -h"
+    #done
+
+    #unset 'help[${#help[@]}-1]'
+    echo "ARGUMENT This is the final argument that will be supplied to the help command======  $sub"
+    local c=$(($c+1))
+    echo "After increasing c, C=$c"
+    azure $sub
+    #az $sub -h > ./azhelp
+    #cat ./azhelp
+    #c=$c+1
+    #sub=""
+    echo "REACHED AT THE END OF WHILE LOOP-----------------------------------------------------------------------------------------------------------------"
+    #n=$(($n-1))
+    #delete last part of sub
+    #args="unusable1 unusable2 useful useful ... useful unusable3"
+    sub=$(awk '{$NF="";print}' <<< "$sub")
+    echo "This is SUB with the last word cut $sub"
+   #unset 'help[${#help[@]}-1]'
+   done
+   #sub=""
+   #break
+   #unset 'help[${#help[@]}-1]'
+   fi
+done
+#sub=""
+}
+azure
